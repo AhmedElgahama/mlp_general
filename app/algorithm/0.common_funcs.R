@@ -56,7 +56,7 @@ trainer_func <- function(train_set,
 tester_func <- function(mdl, test_set,exp_vars) {
   
   test_features <- test_set %>% dplyr::select(all_of(exp_vars))
-  test_predictions <- predict(mdl, test_features)
+  test_predictions <- predict(mdl, test_features)[,1]
   test_predictions <- test_predictions >0.5
   test_predictions <- test_predictions %>% as.numeric()
   results <- list()

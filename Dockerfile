@@ -1,27 +1,23 @@
-FROM rocker/verse:latest
+FROM r-base:4.2.2
+
+RUN apt-get update && \
+  apt-get install -y libxml2-dev
+
+WORKDIR /opt/app
+
+# Install binaries (see https://datawookie.netlify.com/blog/2019/01/docker-images-for-r-r-base-versus-r-apt/)
+COPY ./requirements-bin.txt .
+RUN cat requirements-bin.txt | xargs apt-get install -y -qq
 
 
-# Install dependencies
-RUN apt-get update --allow-releaseinfo-change && apt-get install -y \
-    liblapack-dev \
-    libpq-dev \
-    build-essential libssl-dev libxml2-dev libcurl4-gnutls-dev  
+# Install remaining packages from source (these dont have binaries)
+COPY ./requirements-src.R .
+RUN Rscript requirements-src.R
 
+# Clean up package registry
+RUN rm -rf /var/lib/apt/lists/*
 
-
-COPY ./requirements.txt .
-
-RUN R -e \
-    "install.packages( \
-        c('plumber'), \
-        repos = 'http://cran.us.r-project.org' \
-    )"
-    
-RUN R -e \
-    "install.packages( \
-        readLines('requirements.txt'), \
-        repos = 'http://cran.us.r-project.org' \
-    )"
+WORKDIR /
 
 COPY app ./opt/app
 WORKDIR /opt/app
@@ -29,7 +25,10 @@ WORKDIR /opt/app
 
 ENV PATH="/opt/app:${PATH}"
 
-RUN chmod +x train &&\
-    chmod +x test &&\
-    chmod +x serve 
+RUN chmod +x train
+RUN chmod +x predict
+RUN chmod +x serve
+
+# USER 1001
+
 

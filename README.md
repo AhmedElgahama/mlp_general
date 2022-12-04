@@ -42,7 +42,7 @@ data was split by 70% train to 30% validation to use with hyperparameter tuning.
 the algorithm was trained and evaluated on a variety of datasets such as email spam detection, customer churn, credit card fraud detection, 
 cancer diagnosis, and titanic passanger survivor prediction
 
-This Binary Classifier is written using R as its programming language. R package Multilayer Perceptron is used to implement the main algorithm, 
+This Binary Classifier is written using R as its programming language. R package neuralnet is used to implement the main algorithm, 
 evaluate the model, and preprocess the data. tidyverse, and feature_engine are used for the data preprocessing steps. 
 Plumber are used to provide web service which includes three endpoints- /ping for health check, 
 /infer for predictions.

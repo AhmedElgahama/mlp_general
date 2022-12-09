@@ -27,7 +27,7 @@ trainer_func <- function(train_set,
   
     neural_net2 = neuralnet( f , data = train_set %>% dplyr::select(explanatory_variables , label), 
                           hidden =  3, act.fct = "logistic",
-                          linear.output = FALSE,threshold = 0.01, stepmax=1000000) 
+                          linear.output = TRUE,threshold = 0.1, stepmax=1e7) 
   
   
   

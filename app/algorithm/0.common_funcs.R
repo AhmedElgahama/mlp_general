@@ -25,15 +25,22 @@ trainer_func <- function(train_set,
                         paste(n[!n %in% "label"], 
                               collapse = " + "))) 
   
-  neural_net2 = neuralnet( f , data = train_set %>% dplyr::select(explanatory_variables , label), 
-                          hidden =  1, linear.output = TRUE,threshold = 0.01, stepmax=1000000) 
+    neural_net2 = neuralnet( f , data = train_set %>% dplyr::select(explanatory_variables , label), 
+                          hidden =  3, act.fct = "logistic",
+                          linear.output = FALSE,threshold = 0.01, stepmax=1000000) 
   
   
   
   val_features   <- validation_set %>% dplyr::select(all_of(explanatory_variables))
   
-  val_predictions <- predict(neural_net2, val_features)[,1]
-  val_predictions <- val_predictions >0.5
+  
+  val_predictions = compute(neural_net2,val_features)
+  val_predictions <- val_predictions$net.result[,1]
+  val_predictions <- ifelse(val_predictions>0.5, 1, 0)
+  
+  
+#  val_predictions <- predict(neural_net2, val_features)[,1]
+#  val_predictions <- val_predictions >0.5
   val_predictions <- val_predictions %>% as.numeric()
   val_labels     <- validation_set[[target_variable]] %>% as.numeric()
   score <- auc(roc(val_labels, val_predictions)) %>% as.numeric()
@@ -56,8 +63,13 @@ trainer_func <- function(train_set,
 tester_func <- function(mdl, test_set,exp_vars) {
   
   test_features <- test_set %>% dplyr::select(all_of(exp_vars))
-  test_predictions <- predict(mdl, test_features)[,1]
-  test_predictions <- test_predictions >0.5
+  
+  Predict = compute(mdl,test_features)
+  test_predictions <- Predict$net.result[,2]
+  test_predictions <- ifelse(test_predictions>0.5, 1, 0)
+  
+#  test_predictions <- predict(mdl, test_features)[,1]
+#  test_predictions <- test_predictions >0.5
   test_predictions <- test_predictions %>% as.numeric()
   results <- list()
   results[['test_predictions']] <- 

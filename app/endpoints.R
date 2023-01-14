@@ -1,3 +1,97 @@
+test_json_string_2 <-
+  '[{
+  "customerID" : 1,
+  "gender" : "Male" ,
+  "SeniorCitizen" : 0 ,
+  "Partner" : "Yes" ,
+  "Dependents" : "Yes" ,
+  "tenure" : 70  ,
+  "PhoneService" : "Yes" ,
+  "MultipleLines" : "Yes",
+  "InternetService" : "No" ,
+  "OnlineSecurity" : "No internet service" ,
+  "OnlineBackup" :  "No internet service" ,
+  "DeviceProtection": "No internet service" ,
+  "TechSupport" : "No internet service",
+  "StreamingTV" : "No internet service",
+  "StreamingMovies" : "No internet service",
+  "Contract" : "Two year",
+  "PaperlessBilling" : "No",
+  "PaymentMethod" : "Mailed check",
+  "MonthlyCharges" : 25.4,
+  "TotalCharges" : 1782.05
+},
+{
+  "customerID" : 1,
+  "gender" : "Male" ,
+  "SeniorCitizen" : 0 ,
+  "Partner" : "Yes" ,
+  "Dependents" : "Yes" ,
+  "tenure" : 70  ,
+  "PhoneService" : "Yes" ,
+  "MultipleLines" : "Yes",
+  "InternetService" : "No" ,
+  "OnlineSecurity" : "No internet service" ,
+  "OnlineBackup" :  "No internet service" ,
+  "DeviceProtection": "No internet service" ,
+  "TechSupport" : "No internet service",
+  "StreamingTV" : "No internet service",
+  "StreamingMovies" : "No internet service",
+  "Contract" : "Two year",
+  "PaperlessBilling" : "No",
+  "PaymentMethod" : "Mailed check",
+  "MonthlyCharges" : 25.4,
+  "TotalCharges" : 1782.05
+},
+{
+  "customerID" : 2,
+  "gender" : "Male" ,
+  "SeniorCitizen" : 0 ,
+  "Partner" : "Yes" ,
+  "Dependents" : "Yes" ,
+  "tenure" : 70  ,
+  "PhoneService" : "Yes" ,
+  "MultipleLines" : "Yes",
+  "InternetService" : "No" ,
+  "OnlineSecurity" : "No internet service" ,
+  "OnlineBackup" :  "No internet service" ,
+  "DeviceProtection": "No internet service" ,
+  "TechSupport" : "No internet service",
+  "StreamingTV" : "No internet service",
+  "StreamingMovies" : "No internet service",
+  "Contract" : "Two year",
+  "PaperlessBilling" : "No",
+  "PaymentMethod" : "Mailed check",
+  "MonthlyCharges" : 25.4,
+  "TotalCharges" : 1782.05
+}]'
+  
+## Example for testing
+test_json_string <-
+  '{
+      "customerID" : 3,
+      "gender" : "Male" ,
+      "SeniorCitizen" : 0 ,
+      "Partner" : "Yes" ,
+      "Dependents" : "Yes" ,
+      "tenure" : 70  ,
+      "PhoneService" : "Yes" ,
+      "MultipleLines" : "Yes",
+      "InternetService" : "No" ,
+      "OnlineSecurity" : "No internet service" ,
+      "OnlineBackup" :  "No internet service" ,
+      "DeviceProtection": "No internet service" ,
+      "TechSupport" : "No internet service",
+      "StreamingTV" : "No internet service",
+      "StreamingMovies" : "No internet service",
+      "Contract" : "Two year",
+      "PaperlessBilling" : "No",
+      "PaymentMethod" : "Mailed check",
+      "MonthlyCharges" : 25.4,
+      "TotalCharges" : 1782.05
+}'
+
+
 ## ---- Initialising libraries ----
 suppressWarnings(suppressMessages(library(tidyverse)))
 suppressWarnings(suppressMessages(library(lubridate)))
@@ -54,11 +148,13 @@ prediction_scorer <- function(row) {
 
 
 #* @post /infer
+#* @serializer json list(auto_unbox=TRUE)
 function(req) {
   ## grab the request body 'req' and put it into the variable 'row'
   row <- jsonlite::fromJSON(req$postBody) %>% as_tibble()
   row %>% glimpse()
   
+  ids <- row %>% select(id_column)
   ## placeholder for JSON string to be printed at the end
   result <-
     tibble(
@@ -91,21 +187,23 @@ function(req) {
     } else {
       predicted_class_prob <- prediction_scorer(row)
       print(predicted_class_prob)
-      result$predicted_class <-
+      predicted_class <-
         if_else(predicted_class_prob >= 0.5 ,
                 get("target_class"),
                 get("other_class"))
     
-    result$predicted_class_prob  <- 
+    predicted_class_prob  <- 
      if_else(predicted_class_prob >= 0.5 ,
                 predicted_class_prob %>% round(5),
                 1 - predicted_class_prob %>% round(5)) 
     
   }
   
-  c(result$predicted_class_prob,
-    result$predicted_class,
-    result$warnings)
+  Data <-list(classes = predicted_class,
+              probabilities = predicted_class_prob)
+  dataFrame <- as.data.frame(Data)
+  dataFrame <- cbind(ids,dataFrame)
+  split(dataFrame, 1:nrow(dataFrame)) %>% unname()
 }
 }
 

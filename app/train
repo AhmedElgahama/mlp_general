@@ -25,14 +25,14 @@ source('algorithm/0.common_funcs.R')
 
 ## get the json file for the schema
 schema <-
-  glue('/opt/ml_vol/inputs/data_config/',
-       list.files(path = "/opt/ml_vol/inputs/data_config"))
+  glue('/opt/model_inputs_outputs/inputs/schema/',
+       list.files(path = "/opt/model_inputs_outputs/inputs/schema"))
 
 ## Get the training data file
 data   <-
   glue(
-    '/opt/ml_vol/inputs/data/training/binaryClassificationBaseMainInput/',
-    list.files(path = "/opt/ml_vol/inputs/data/training/binaryClassificationBaseMainInput")
+    '/opt/model_inputs_outputs/inputs/data/training/',
+    list.files(path = "/opt/model_inputs_outputs/inputs/data/training/")
   )
 
 ## Get the hyperparameters file
@@ -79,12 +79,13 @@ trainer <- function(schema_path, data_path)
   
   ## Saving id, target, and target class in variables
   id_column    <-
-    file$inputDatasets$binaryClassificationBaseMainInput$idField
+    file$id$name
   target_column       <-
-    file$inputDatasets$binaryClassificationBaseMainInput$targetField
+    file$target$name
   target_class <-
-    file$inputDatasets$binaryClassificationBaseMainInput$targetClass
-  features = file$inputDatasets$binaryClassificationBaseMainInput$predictorFields
+    file$target$classes[[2]]
+  features <- 
+    file$features
   
   
   ## Splitting data into two categories (Numerical and Categorical)
@@ -207,7 +208,7 @@ trainer <- function(schema_path, data_path)
   trained_model$variables_to_encode <- variables_to_encode
   trained_model$variables_numeric <- variables_numeric
   trained_model$encodings <- encodings
-  trained_model %>% write_rds('/opt/ml_vol/model/artifacts/model.rds')
+  trained_model %>% write_rds('/opt/model_inputs_outputs/model/artifacts/model.rds')
 }
 
 tryCatch(               
@@ -218,7 +219,7 @@ tryCatch(
   },
   # Specifying error message
   error = function(e){         
-    write(e %>% as.character(),file="/opt/ml_vol/outputs/errors/train_failure.txt",append=FALSE)
+    write(e %>% as.character(),file="/opt/model_inputs_outputs/outputs/errors/train_failure.txt",append=FALSE)
   }
 )
 

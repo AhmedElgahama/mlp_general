@@ -10,7 +10,7 @@ tryCatch(
   },
   # Specifying error message
   error = function(e) {
-    write(e %>% as.character(), file = "/opt/ml_vol/outputs/errors/serve_failure.txt", append =
+    write(e %>% as.character(), file = "/opt/model_inputs_outputs/outputs/errors/serve_failure.txt", append =
             FALSE)
   }
 )

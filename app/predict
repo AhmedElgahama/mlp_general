@@ -24,8 +24,8 @@ source('algorithm/0.common_funcs.R')
 ## Get the training data file
 data   <-
   glue(
-    '/opt/ml_vol/inputs/data/testing/binaryClassificationBaseMainInput/',
-    list.files(path = "/opt/ml_vol/inputs/data/testing/binaryClassificationBaseMainInput")
+    '/opt/model_inputs_outputs/inputs/data/testing/',
+    list.files(path = "/opt/model_inputs_outputs/inputs/data/testing/")
   )
 
 
@@ -33,7 +33,7 @@ data   <-
 tester <- function(data_path)
 {
   ## Load model and test data
-  trained_model         <- read_rds('/opt/ml_vol/model/artifacts/model.rds')
+  trained_model         <- read_rds('/opt/model_inputs_outputs/model/artifacts/model.rds')
   variables_to_encode   <- trained_model$variables_to_encode
   variables_numeric   <- trained_model$variables_numeric
   target_class          <- trained_model$target_class
@@ -97,7 +97,7 @@ tester <- function(data_path)
   
   ## Saving ids with prediction
   predictions <- cbind(id, test_results)
-  predictions %>% write.csv('/opt/ml_vol/outputs/testing_outputs/test_predictions.csv', row.names=FALSE)
+  predictions %>% write.csv('/opt/model_inputs_outputs/outputs/predictions/predictions.csv', row.names=FALSE)
 }
 
 
@@ -110,6 +110,6 @@ tryCatch(
   },
   # Specifying error message
   error = function(e){         
-    write(e %>% as.character(),file="/opt/ml_vol/outputs/errors/test_failure.txt",append=FALSE)
+    write(e %>% as.character(),file="/opt/model_inputs_outputs/outputs/errors/test_failure.txt",append=FALSE)
   }
 )

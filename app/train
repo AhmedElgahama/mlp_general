@@ -95,7 +95,7 @@ trainer <- function(schema_path, data_path)
   for (field in features)
   {
     type <- field[['dataType']]
-    name <- field[['fieldName']]
+    name <- field[['name']]
     name = make.names(name,unique = TRUE)
     if (type == 'CATEGORICAL')
     {

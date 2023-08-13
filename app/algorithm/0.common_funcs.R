@@ -64,7 +64,7 @@ tester_func <- function(mdl, test_set,exp_vars) {
   test_features <- test_set %>% dplyr::select(all_of(exp_vars))
   
   Predict = compute(mdl,test_features)
-  test_predictions <- Predict$net.result[,2]
+  test_predictions <- Predict$net.result[,1]
   test_predictions <- ifelse(test_predictions>0.5, 1, 0)
   
 #  test_predictions <- predict(mdl, test_features)[,1]
@@ -229,15 +229,18 @@ get_rejection_rates_by_category <- function(df, col_name) {
 
 
 
-calc_mode <- function(x){
-  
+calc_mode <- function(x) {
   # List the distinct / unique values
-  distinct_values <- unique(x)
   
+  # x <- x %>% drop_na()
+  
+  distinct_values <- unique(x)
+  distinct_values <- distinct_values[!is.na(distinct_values)]
   # Count the occurrence of each distinct value
   distinct_tabulate <- tabulate(match(x, distinct_values))
   
   # Return the value with the highest occurrence
   distinct_values[which.max(distinct_tabulate)]
 }
+
 

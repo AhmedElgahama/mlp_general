@@ -23,7 +23,7 @@ docker run -v <mounted_ml_dir_on_host>:/opt/ml_vol --rm <image_name> predict
 docker run -v <mounted_ml_dir_on_host>:/opt/ml_vol -p 8080:8080 --rm <image_name> serve
 
 ## Mounted volume for inputs and outputs
-![plot](https://github.com/AhmedElgahama/test/blob/main/schema.PNG)
+![plot](https://github.com/AhmedElgahama/test/blob/main/Capture4.PNG)
 
 In the above exhibit, note the following:
 * The file indicated as <data_config_file.json> is the schema file.
@@ -32,7 +32,7 @@ In the above exhibit, note the following:
 
 ## Data schema
 
-![plot2](https://github.com/AhmedElgahama/test/blob/main/Capture2.PNG)
+![plot2](https://github.com/AhmedElgahama/test/blob/main/Capture3.PNG)
 
 ## Data preprocessing
 The data preprocessing step includes missing data imputation, target encoding for categorical variables, 
